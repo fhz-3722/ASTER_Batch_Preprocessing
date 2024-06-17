@@ -49,18 +49,20 @@ ucc = np.matrix(([[0.676, 1.688, 2.25, 0.0],\
     # Thome et al. is used, which uses spectral irradiance values from MODTRAN
     # Ordered b1, b2, b3N, b4, b5...b9
 irradiance = [1848, 1549, 1114, 225.4, 86.63, 81.85, 74.85, 66.49, 59.85]
-    
+
+# ASTER DN value to radiance through (DN-1)* gain
 def dn2rad (x):
     rad = (x-1.)*ucc1
     return rad
-    
+
+#Radiance value to TOA data
 def rad2ref (rad):
     ref = (np.pi * rad * (esd * esd)) / (irradiance1 * np.sin(np.pi * sza / 
     180))
     return ref
     # Loop through all ASTER L1T hdf files in the directory
 
-
+# A loop to iterate every ASTER l1T hdf file
 for k in range(len(file_list)):
         
         # Maintains original filename convention    
@@ -336,7 +338,8 @@ for k in range(len(file_list)):
         
     out_rad = None
     
-    
+    # Using spectral library to create an ENVI support Image
+   #Create ENVI read metadata dict
     md = { "map info": ["UTM", str(1), str(1), str(ul_xx), str(ul_yy), str(30), str(30), str(utm), 'South', 'WGS-84' ],\
           #'coordinate system string': srs.ExportToWkt(),
           'Wavelength units': 'Micrometers',
@@ -348,42 +351,8 @@ for k in range(len(file_list)):
         }
     envi.save_image('{}\\{}_rad1.hdr'.format(rad_out_dir, file_name.split('.hdf')[0]),\
                     img_rad.astype('float32'), metadata = md, force = True)
-
-    
-
-    
-    
-    """
-    out_rgb = driver.Create(out_filename_rgb, img_rgb.shape[1], img_rgb.shape[0],\
-                            img_rgb.shape[2], gdal.GDT_Float32)
-    srs = osr.SpatialReference()
-    srs.ImportFromEPSG(utm_zone)
-    out_rgb.SetProjection(srs.ExportToWkt())
-    out_rgb.SetGeoTransform((ul_xx, x_res, 0., ul_yy, 0., y_res))
-    for i in range(1, out_rgb.RasterCount+1):
-        out_band = out_rgb.GetRasterBand(i)
-        out_band.WriteArray(img_rgb[:, :, i-1])
-        out_band.FlushCache()
-        out_band.SetNoDataValue(0)
-    out_rgb = None
-    
-    del out_rgb
-    
-    
-    
-    out = driver.Create(out_filename, img_arr.shape[1], img_arr.shape[0], img_arr.shape[2], 
-                        gdal.GDT_UInt16)
-    srs = osr.SpatialReference()
-    srs.ImportFromEPSG(utm_zone)
-    out.SetProjection(srs.ExportToWkt())
-    out.SetGeoTransform((ul_xx, x_res, 0., ul_yy, 0., y_res))
-    for i in range(1, out.RasterCount+1):
-        outband = out.GetRasterBand(i)
-        outband.WriteArray(img_arr[:,:, i-1])
-        outband.SetNoDataValue(0)
-    out = None
        
-    
+    #Using gdal library to create ENVI support image file
     out_ref = driver.Create(out_filename_ref, img_ref.shape[1], img_ref.shape[0], img_ref.shape[2], 
                         gdal.GDT_Float32)
     srs = osr.SpatialReference()
@@ -398,4 +367,4 @@ for k in range(len(file_list)):
     
     
     del img_arr, img_rad, img_ref
-    """
+   
