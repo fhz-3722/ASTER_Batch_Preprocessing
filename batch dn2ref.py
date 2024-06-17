@@ -2,7 +2,9 @@
 """
 Created on Tue Sep 20 16:38:18 2022
 
-@author: hfu
+@author: Hanze Fu
+
+This script provides two conversions including DN value to radiance-at-sensor and radiance to TOA reflectance. 
 """
 
 from osgeo import gdal, osr
@@ -14,7 +16,7 @@ import matplotlib.pyplot as plt
 from spectral import *
 import spectral.io.envi as evni
 
-in_dir = "I:\\ADES_ASTER2\\"
+in_dir = "" # Paste your ASTER dir here, eg. C://Temp or C://Temp//
 os.chdir(in_dir)
    
     # Create and set output directory
